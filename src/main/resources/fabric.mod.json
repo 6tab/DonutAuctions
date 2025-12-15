@@ -2,10 +2,14 @@
   "schemaVersion": 1,
   "id": "donutauctions",
   "version": "${version}",
-  "name": "DonutAuctions",
-  "description": "",
-  "authors": [],
-  "contact": {},
+  "name": "Donut Auctions",
+  "description": "Displays live DonutSMP auction prices directly in item tooltips.",
+  "authors": [
+    "6tab"
+  ],
+  "contact": {
+    "sources": "https://github.com/6tab/donut-auctions"
+  },
   "license": "All-Rights-Reserved",
   "icon": "assets/donutauctions/icon.png",
   "environment": "client",
@@ -18,7 +22,7 @@
     "donutauctions.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=${loader_version}",
+    "fabricloader": ">=0.15.0",
     "fabric": "*",
     "minecraft": ">=1.21"
   }
