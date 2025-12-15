@@ -1,9 +1,7 @@
 package tk.jandev.donutauctions.mixin;
 
-
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -17,25 +15,34 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import tk.jandev.donutauctions.DonutAuctions;
 import tk.jandev.donutauctions.scraper.cache.ItemCache;
 
-import java.util.function.Consumer;
+import java.util.List;
 
 @Environment(EnvType.CLIENT)
 @Mixin(ItemStack.class)
 public abstract class ItemStackMixin {
-    @Shadow public abstract int getCount();
+
+    @Shadow
+    public abstract int getCount();
 
     @Inject(
-            method = "appendTooltip",
-            at = @At(
-                    value = "INVOKE", // inject into the place where LORE is applied!
-                    target = "Lnet/minecraft/item/ItemStack;appendComponentTooltip(Lnet/minecraft/component/ComponentType;Lnet/minecraft/item/Item$TooltipContext;Lnet/minecraft/component/type/TooltipDisplayComponent;Ljava/util/function/Consumer;Lnet/minecraft/item/tooltip/TooltipType;)V",
-                    shift = At.Shift.AFTER,
-                    ordinal = 18
-            )
+        method = "appendTooltip",
+        at = @At("TAIL")
     )
-    public void appendAfterLore(Item.TooltipContext context, TooltipDisplayComponent displayComponent, PlayerEntity player, TooltipType type, Consumer<Text> textConsumer, CallbackInfo ci) {
-        if (DonutAuctions.getInstance().shouldRenderItem((ItemStack) (Object) (this))) {
-            textConsumer.accept(ItemCache.getInstance().getPrice((ItemStack) (Object) this).getMessage(getCount()));
+    private void donutauctions$appendAfterLore(
+            Item.TooltipContext context,
+            PlayerEntity player,
+            TooltipType type,
+            List<Text> lines,
+            CallbackInfo ci
+    ) {
+        ItemStack stack = (ItemStack) (Object) this;
+
+        if (DonutAuctions.getInstance().shouldRenderItem(stack)) {
+            lines.add(
+                ItemCache.getInstance()
+                        .getPrice(stack)
+                        .getMessage(getCount())
+            );
         }
     }
 }
